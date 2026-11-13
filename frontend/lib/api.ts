@@ -1,4 +1,5 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+// Empty string = same origin (Next.js proxies /api/* to the backend, see next.config.mjs)
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 export class ApiError extends Error {
   status: number;
@@ -33,4 +34,7 @@ export const api = {
   del: <T>(path: string) => request<T>(path, { method: "DELETE" }),
 };
 
-export const wsUrl = (path: string) => API_URL.replace(/^http/, "ws") + path;
+export const wsUrl = (path: string) => {
+  const base = API_URL || (typeof window !== "undefined" ? `http://${window.location.hostname}:8000` : "http://localhost:8000");
+  return base.replace(/^http/, "ws") + path;
+};
